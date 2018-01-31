@@ -1,5 +1,4 @@
-//this is an addition
-//additoin
+
 //Drew Robert & Joseph Niski
 //ECE 2049
 //Lab 2
