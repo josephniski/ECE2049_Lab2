@@ -19,6 +19,7 @@ int state = 0;
 char pressed = 0xFF;
 unsigned char currKey=0;
 int once = 1;
+double rate = 0.00;
 
 
 // Main
@@ -90,22 +91,22 @@ void main(void)
 
         pressed = buttonStates();
 
-        if (pressed == 0x01){
+        if (pressed == '1'){
             state = 2;
             Graphics_clearDisplay(&g_sContext); // Clear the display
         }
 
-        else if (pressed == 0x04){
+        else if (pressed == '2'){
             state = 3;
             Graphics_clearDisplay(&g_sContext); // Clear the display
         }
 
-        else if (pressed == 0x10){
+        else if (pressed == '3'){
             state = 4;
             Graphics_clearDisplay(&g_sContext); // Clear the display
         }
 
-        else if (pressed == 0x40){
+        else if (pressed == '4'){
             state = 5;
             Graphics_clearDisplay(&g_sContext); // Clear the display
         }
@@ -130,6 +131,7 @@ void main(void)
         if (currKey == '*')
         {
             state = 6;
+            rate = 2.99;
             Graphics_clearDisplay(&g_sContext); // Clear the display
         }
         if (currKey == '#')
@@ -155,6 +157,7 @@ void main(void)
 
         if (currKey == '*'){
             state = 6;
+            rate = 2.89;
             Graphics_clearDisplay(&g_sContext); // Clear the display
         }
         if (currKey == '#'){
@@ -169,7 +172,7 @@ void main(void)
     case 4: //Regular
 
 
-        Graphics_drawStringCentered(&g_sContext, "Regular Selected", AUTO_STRING_LENGTH, 48, 15, TRANSPARENT_TEXT);
+        Graphics_drawStringCentered(&g_sContext, "Premium Selected", AUTO_STRING_LENGTH, 48, 15, TRANSPARENT_TEXT);
         Graphics_drawStringCentered(&g_sContext, "Correct?", AUTO_STRING_LENGTH, 48, 25, TRANSPARENT_TEXT);
         Graphics_drawStringCentered(&g_sContext, "'*' Continue", AUTO_STRING_LENGTH, 48, 35, TRANSPARENT_TEXT);
         Graphics_drawStringCentered(&g_sContext, "'#' Restart", AUTO_STRING_LENGTH, 48, 45, TRANSPARENT_TEXT);
@@ -179,6 +182,7 @@ void main(void)
 
         if (currKey == '*'){
             state = 6;
+            rate = 2.69;
             Graphics_clearDisplay(&g_sContext); // Clear the display
         }
         if (currKey == '#'){
@@ -193,7 +197,7 @@ void main(void)
     case 5: //Premium
 
 
-        Graphics_drawStringCentered(&g_sContext, "Premium Selected", AUTO_STRING_LENGTH, 48, 15, TRANSPARENT_TEXT);
+        Graphics_drawStringCentered(&g_sContext, "Regular Selected", AUTO_STRING_LENGTH, 48, 15, TRANSPARENT_TEXT);
         Graphics_drawStringCentered(&g_sContext, "Correct?", AUTO_STRING_LENGTH, 48, 25, TRANSPARENT_TEXT);
         Graphics_drawStringCentered(&g_sContext, "'*' Continue", AUTO_STRING_LENGTH, 48, 35, TRANSPARENT_TEXT);
         Graphics_drawStringCentered(&g_sContext, "'#' Restart", AUTO_STRING_LENGTH, 48, 45, TRANSPARENT_TEXT);
@@ -203,6 +207,7 @@ void main(void)
 
         if (currKey == '*'){
             state = 6;
+            rate = 2.49;
             Graphics_clearDisplay(&g_sContext); // Clear the display
         }
         if (currKey == '#'){
