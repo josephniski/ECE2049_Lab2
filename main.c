@@ -91,22 +91,22 @@ void main(void)
 
         pressed = buttonStates();
 
-        if (pressed == '1'){
+        if (pressed == 0x01){
             state = 2;
             Graphics_clearDisplay(&g_sContext); // Clear the display
         }
 
-        else if (pressed == '2'){
+        else if (pressed == 0x04){
             state = 3;
             Graphics_clearDisplay(&g_sContext); // Clear the display
         }
 
-        else if (pressed == '3'){
+        else if (pressed == 0x10){
             state = 4;
             Graphics_clearDisplay(&g_sContext); // Clear the display
         }
 
-        else if (pressed == '4'){
+        else if (pressed == 0x40){
             state = 5;
             Graphics_clearDisplay(&g_sContext); // Clear the display
         }
