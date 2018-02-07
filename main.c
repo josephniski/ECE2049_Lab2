@@ -1,4 +1,5 @@
 
+
 //Drew Robert & Joseph Niski
 //ECE 2049
 //Lab 2
@@ -11,14 +12,31 @@ void swDelay(char numLoops);
 void configBoardButtons();
 void configLaunchButtons();
 char buttonStates();
-
+void runtimerA2(void);
+void stoptimerA2(int reset);
+char launchpadButtonStates();
+void decimalASCIIPrice(int input);
+void decimalASCIIGallons(int gal);
 
 // Declare globals here
 int state = 0;
 char pressed = 0xFF;
+char pressed2 = 0xFF;
 unsigned char currKey=0;
 int once = 1;
-double rate = 0.00;
+int diesel = 0;
+int super = 0;
+int premium = 0;
+int regular = 0;
+int rate = 0;
+long unsigned int timer_cnt=0;
+char tdir = 1;
+int totalGallons = 0;
+int totalPrice = 0;
+int timer_on = 0;
+unsigned char priceArray[10] = {' '};
+unsigned char galArray[10] = {' '};
+int i = 0, j = 0;
 
 
 // Main
@@ -30,6 +48,8 @@ void main(void)
     pressed = 0xFF;
 
     initLeds();
+
+    _BIS_SR(GIE);
 
     configDisplay();
     configKeypad();
@@ -75,7 +95,7 @@ void main(void)
     case 1: // Select Grade
 
         currKey = getKey();
-        //once = 1;
+
         while(once == 1)
         {
         Graphics_drawStringCentered(&g_sContext, "Select Grade", AUTO_STRING_LENGTH, 48, 15, TRANSPARENT_TEXT);
@@ -91,21 +111,25 @@ void main(void)
         pressed = buttonStates();
 
         if (pressed == 0x01){
+            once = 1;
             state = 2;
             Graphics_clearDisplay(&g_sContext); // Clear the display
         }
 
         else if (pressed == 0x04){
-            state = 3;
-            Graphics_clearDisplay(&g_sContext); // Clear the display
-        }
-
-        else if (pressed == 0x10){
+            once = 1;
             state = 4;
             Graphics_clearDisplay(&g_sContext); // Clear the display
         }
 
+        else if (pressed == 0x10){
+            once = 1;
+            state = 3;
+            Graphics_clearDisplay(&g_sContext); // Clear the display
+        }
+
         else if (pressed == 0x40){
+            once = 1;
             state = 5;
             Graphics_clearDisplay(&g_sContext); // Clear the display
         }
@@ -118,7 +142,7 @@ void main(void)
 
         currKey = getKey();
 
-
+        while (once == 1){
         Graphics_drawStringCentered(&g_sContext, "Diesel Selected", AUTO_STRING_LENGTH, 48, 15, TRANSPARENT_TEXT);
         Graphics_drawStringCentered(&g_sContext, "Correct?", AUTO_STRING_LENGTH, 48, 25, TRANSPARENT_TEXT);
         Graphics_drawStringCentered(&g_sContext, "'*' Continue", AUTO_STRING_LENGTH, 48, 35, TRANSPARENT_TEXT);
@@ -126,14 +150,18 @@ void main(void)
 
         // Update display
         Graphics_flushBuffer(&g_sContext);
+        once = 0;
+        }
 
         if (currKey == '*')
         {
+            diesel = 1;
+            rate = 299;
+            once = 1;
             state = 6;
-            rate = 2.99;
             Graphics_clearDisplay(&g_sContext); // Clear the display
         }
-        if (currKey == '#')
+        else if (currKey == '#')
         {
             state = 1;
             Graphics_clearDisplay(&g_sContext); // Clear the display
@@ -145,7 +173,9 @@ void main(void)
 
     case 3: //Super
 
+        currKey = getKey();
 
+        while (once == 1){
         Graphics_drawStringCentered(&g_sContext, "Super Selected", AUTO_STRING_LENGTH, 48, 15, TRANSPARENT_TEXT);
         Graphics_drawStringCentered(&g_sContext, "Correct?", AUTO_STRING_LENGTH, 48, 25, TRANSPARENT_TEXT);
         Graphics_drawStringCentered(&g_sContext, "'*' Continue", AUTO_STRING_LENGTH, 48, 35, TRANSPARENT_TEXT);
@@ -153,13 +183,17 @@ void main(void)
 
         // Update display
         Graphics_flushBuffer(&g_sContext);
+        once = 0;
+        }
 
         if (currKey == '*'){
+            super = 1;
+            rate = 289;
+            once = 1;
             state = 6;
-            rate = 2.89;
             Graphics_clearDisplay(&g_sContext); // Clear the display
         }
-        if (currKey == '#'){
+        else if (currKey == '#'){
             state = 1;
             Graphics_clearDisplay(&g_sContext); // Clear the display
         }
@@ -170,21 +204,27 @@ void main(void)
 
     case 4: //Regular
 
+        currKey = getKey();
 
-        Graphics_drawStringCentered(&g_sContext, "Premium Selected", AUTO_STRING_LENGTH, 48, 15, TRANSPARENT_TEXT);
+        while (once == 1){
+        Graphics_drawStringCentered(&g_sContext, "Regular Selected", AUTO_STRING_LENGTH, 48, 15, TRANSPARENT_TEXT);
         Graphics_drawStringCentered(&g_sContext, "Correct?", AUTO_STRING_LENGTH, 48, 25, TRANSPARENT_TEXT);
         Graphics_drawStringCentered(&g_sContext, "'*' Continue", AUTO_STRING_LENGTH, 48, 35, TRANSPARENT_TEXT);
         Graphics_drawStringCentered(&g_sContext, "'#' Restart", AUTO_STRING_LENGTH, 48, 45, TRANSPARENT_TEXT);
 
         // Update display
         Graphics_flushBuffer(&g_sContext);
+        once = 0;
+        }
 
         if (currKey == '*'){
+            regular = 1;
+            rate = 249;
+            once = 1;
             state = 6;
-            rate = 2.69;
             Graphics_clearDisplay(&g_sContext); // Clear the display
         }
-        if (currKey == '#'){
+        else if (currKey == '#'){
             state = 1;
             Graphics_clearDisplay(&g_sContext); // Clear the display
         }
@@ -195,21 +235,27 @@ void main(void)
 
     case 5: //Premium
 
+        currKey = getKey();
 
-        Graphics_drawStringCentered(&g_sContext, "Regular Selected", AUTO_STRING_LENGTH, 48, 15, TRANSPARENT_TEXT);
+        while (once == 1){
+        Graphics_drawStringCentered(&g_sContext, "Premium Selected", AUTO_STRING_LENGTH, 48, 15, TRANSPARENT_TEXT);
         Graphics_drawStringCentered(&g_sContext, "Correct?", AUTO_STRING_LENGTH, 48, 25, TRANSPARENT_TEXT);
         Graphics_drawStringCentered(&g_sContext, "'*' Continue", AUTO_STRING_LENGTH, 48, 35, TRANSPARENT_TEXT);
         Graphics_drawStringCentered(&g_sContext, "'#' Restart", AUTO_STRING_LENGTH, 48, 45, TRANSPARENT_TEXT);
 
         // Update display
         Graphics_flushBuffer(&g_sContext);
+        once = 0;
+        }
 
         if (currKey == '*'){
+            premium = 1;
+            rate = 269;
+            once = 1;
             state = 6;
-            rate = 2.49;
             Graphics_clearDisplay(&g_sContext); // Clear the display
         }
-        if (currKey == '#'){
+        else if (currKey == '#'){
             state = 1;
             Graphics_clearDisplay(&g_sContext); // Clear the display
         }
@@ -219,8 +265,67 @@ void main(void)
 
 
     case 6: // Pump Ready
+
+        while(once == 1){
+
         Graphics_drawStringCentered(&g_sContext, "Pump Ready.", AUTO_STRING_LENGTH, 48, 15, TRANSPARENT_TEXT);
         Graphics_drawStringCentered(&g_sContext, "Begin Fueling", AUTO_STRING_LENGTH, 48, 25, TRANSPARENT_TEXT);
+
+        // Update display
+        Graphics_flushBuffer(&g_sContext);
+
+        stoptimerA2(1);
+
+        once = 0;
+
+        }//end while once
+
+        pressed2 = launchpadButtonStates();
+
+        while(pressed2 != 0x00){
+
+        pressed2 = launchpadButtonStates();
+
+        if (diesel == 1 && pressed2 == 0x01){
+            timer_on = 1;
+            runtimerA2();
+
+            totalGallons = timer_cnt;
+            totalPrice = (timer_cnt)*(rate);
+
+            decimalASCIIGallons(totalGallons);
+            decimalASCIIPrice(totalPrice);
+
+            Graphics_drawStringCentered(&g_sContext, galArray, 10, 48, 45, OPAQUE_TEXT);
+            Graphics_drawStringCentered(&g_sContext, priceArray, 10, 48, 55, OPAQUE_TEXT);
+
+            // Update display
+            Graphics_flushBuffer(&g_sContext);
+        }
+
+        else if (pressed2 == 0x04 && (!(diesel == 1)))
+        {
+            timer_on = 1;
+            runtimerA2();
+
+            totalGallons = timer_cnt;
+            totalPrice = (timer_cnt)*(rate);
+
+            decimalASCIIGallons(totalGallons);
+            decimalASCIIPrice(totalPrice);
+
+            Graphics_drawStringCentered(&g_sContext, galArray, 10, 48, 45, OPAQUE_TEXT);
+            Graphics_drawStringCentered(&g_sContext, priceArray, 10, 48, 55, OPAQUE_TEXT);
+
+            // Update display
+            Graphics_flushBuffer(&g_sContext);
+        }
+
+        stoptimerA2(0);
+
+        }//end while pressed loop
+
+
 
     }//end the switch state
     }//end the while loop
@@ -232,22 +337,22 @@ void main(void)
 
 void swDelay(char numLoops)
 {
-	// This function is a software delay. It performs
-	// useless loops to waste a bit of time
-	//
-	// Input: numLoops = number of delay loops to execute
-	// Output: none
-	//
-	// smj, ECE2049, 25 Aug 2013
+    // This function is a software delay. It performs
+    // useless loops to waste a bit of time
+    //
+    // Input: numLoops = number of delay loops to execute
+    // Output: none
+    //
+    // smj, ECE2049, 25 Aug 2013
 
-	volatile unsigned int i,j;	// volatile to prevent removal in optimization
-			                    // by compiler. Functionally this is useless code
+    volatile unsigned int i,j;  // volatile to prevent removal in optimization
+                                // by compiler. Functionally this is useless code
 
-	for (j=0; j<numLoops; j++)
+    for (j=0; j<numLoops; j++)
     {
-    	i = 50000 ;					// SW Delay
-   	    while (i > 0)				// could also have used while (i)
-	       i--;
+        i = 50000 ;                 // SW Delay
+        while (i > 0)               // could also have used while (i)
+           i--;
     }
 }
 
@@ -272,7 +377,7 @@ void configBoardButtons(){
 }
 
 void configLaunchButtons(){
-    //2 Launchpd Buttons: P1.1, P2.1
+    //2 Launchpad Buttons: P1.1, P2.1
 
     P2SEL &= (BIT7|BIT6|BIT5|BIT4|BIT3|BIT2|BIT0); //xxxx xx0x
     P1SEL &= (BIT7|BIT6|BIT5|BIT4|BIT3|BIT2|BIT0); //xxxx xx0x
@@ -306,6 +411,27 @@ char buttonStates(){
     return out;
 }
 
+char launchpadButtonStates(){
+    //1 is not pressed
+    //0 is pressed
+
+    char inBits11, inBits21;
+    char out11=0, out21=0, out=0;
+
+    inBits21 = P2IN & (BIT1); //0000 00x0, keep bits 1
+    inBits11 = P1IN & (BIT1); //0000 00x0, keep bit 1
+
+    if (!(inBits21 & BIT1))
+        out21 = 0x01; //0000 0001
+    else if (!(inBits11 & BIT1))
+        out11 = 0x04; //0000 0100
+
+    out = (out21|out11);
+
+    return out;
+}
+
+
 void runtimerA2(void)
 {
 // This function configures and starts Timer A2
@@ -319,4 +445,70 @@ void runtimerA2(void)
     TA2CTL = TASSEL_1 + MC_1 + ID_0;
     TA2CCR0 = 327; // 327+1 = 328 ACLK tics = ~1/100 seconds
     TA2CCTL0 = CCIE; // TA2CCR0 interrupt enabled
+}
+
+void stoptimerA2(int reset)
+{
+// This function stops Timer A2 andresets the global time variable
+// if input reset = 1
+//
+// Input: reset, Output: none
+//
+// smj, ECE2049, 17 Sep 2013
+//
+    TA2CTL = MC_0; // stop timer
+    TA2CCTL0 &= ~CCIE; // TA2CCR0 interrupt disabled
+    if (reset)
+        timer_cnt = 0;
+}
+
+// Timer A2 interrupt service routine
+#pragma vector=TIMER2_A0_VECTOR
+__interrupt void TimerA2_ISR(void)
+{
+    if (tdir)
+    {
+        timer_cnt++;  //05
+        if (timer_cnt == 60000)
+            timer_cnt = 0;
+        if (timer_cnt % 100 == 0) // blink LEDs once a second
+        {
+            P1OUT = P1OUT ^ BIT0;
+            P4OUT ^= BIT7;
+        }
+    }
+    else
+        timer_cnt--;
+}
+
+void decimalASCIIPrice(int input){
+
+    for (i = 9; i >= 0; i--){
+       if (i == 7) {
+           priceArray[7] = '.';
+       }
+       if (i == 0){
+           priceArray[0] = '$';
+       }
+       else {
+           priceArray[i] = ((input % 10) + 0x30);
+           input = input / 10;
+       }
+    }
+
+}
+
+void decimalASCIIGallons(int gal){
+
+
+    for (j = 9; j >= 0; j--){
+        if(j == 6){
+            galArray[j] = '.';
+        }
+        else {
+            galArray[j] = ((gal % 10) + 0x30);
+            gal = gal / 10;
+        }
+    }
+
 }
