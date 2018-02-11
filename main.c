@@ -483,18 +483,20 @@ __interrupt void TimerA2_ISR(void)
 
 void decimalASCIIPrice(int input){
 
-    for (i = 9; i >= 0; i--){
-       if (i == 7) {
-           priceArray[7] = '.';
+    for (m = 9; m >= 0; m--){
+       if (m == 5) {
+           priceArray[m] = '.';
        }
-       if (i == 0){
-           priceArray[0] = '$';
+       else if (m == 0){
+           priceArray[m] = '$';
        }
        else {
-           priceArray[i] = ((input % 10) + 0x30);
+           priceArray[m] = ((input % 10) + 0x30);
            input = input / 10;
        }
     }
+
+
 
 }
 
@@ -502,7 +504,7 @@ void decimalASCIIGallons(int gal){
 
 
     for (j = 9; j >= 0; j--){
-        if(j == 6){
+        if(j == 7){
             galArray[j] = '.';
         }
         else {
