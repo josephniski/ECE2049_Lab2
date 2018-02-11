@@ -262,7 +262,7 @@ void main(void)
 
 
 
-    case 6: // Pump Ready
+    case 6: // Pump Ready and fueling
 
         while(once == 1){
 
@@ -304,7 +304,7 @@ void main(void)
 
         }
 
-        else if (pressed2 == 0x04 && (!(diesel == 1)))
+        else if (pressed2 == 0x04 && diesel == 0)
         {
             timer_on = 1;
             runtimerA2();
@@ -330,8 +330,6 @@ void main(void)
         //}//end while pressed loop
 
         //stoptimerA2(0);
-
-
 
 
     }//end the switch state
@@ -405,13 +403,13 @@ char buttonStates(){
     inBits2 = P2IN & (BIT2); //0000 0x00, keep bit 2
 
     if (!(inBits7 & BIT0))
-        out71 = 0x01; //0000 0001
+        out71 = 0x01; //0000 0001 //deisel
     else if (!(inBits7 & BIT4))
-        out72 = 0x04;
+        out72 = 0x04; //Super
     else if (!(inBits3 & BIT6))
-        out3 = 0x10;
+        out3 = 0x10; //Premium
     else if (!(inBits2 & BIT2))
-        out2 = 0x40;
+        out2 = 0x40; //Regular
 
     out = (out71|out72|out3|out2);
 
@@ -448,7 +446,7 @@ void runtimerA2(void)
 
 // Use ACLK, 16 Bit, up mode, 1 divider
     TA2CTL = TASSEL_1 + MC_1 + ID_0;
-    TA2CCR0 = 3276; // 327+1 = 328 ACLK tics = ~1/10 seconds
+    TA2CCR0 = 3276; // 3276+1 = 3277 ACLK tics = ~1/10 seconds
     TA2CCTL0 = CCIE; // TA2CCR0 interrupt enabled
 }
 
