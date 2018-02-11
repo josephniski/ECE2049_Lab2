@@ -20,23 +20,23 @@ void decimalASCIIGallons(int gal);
 
 // Declare globals here
 int state = 0;
-char pressed = 0xFF;
-char pressed2 = 0xFF;
+unsigned char pressed = 0xFF;
+unsigned char pressed2 = 0xFF;
 unsigned char currKey=0;
 int once = 1;
 int diesel = 0;
 int super = 0;
 int premium = 0;
 int regular = 0;
-int rate = 0;
+unsigned int rate = 0;
 long unsigned int timer_cnt=0;
 char tdir = 1;
-int totalGallons = 0;
-int totalPrice = 0;
+unsigned int totalGallons = 0;
+unsigned int totalPrice = 0;
 int timer_on = 0;
 unsigned char priceArray[10] = {' '};
 unsigned char galArray[10] = {' '};
-int i = 0, j = 0;
+int i = 0, j = 0, m=0;
 
 
 // Main
@@ -45,8 +45,6 @@ void main(void)
 
     WDTCTL = WDTPW | WDTHOLD;    // Stop watchdog timer. Always need to stop this!!
                                  // You can then configure it properly, if desired
-    pressed = 0xFF;
-
     initLeds();
 
     _BIS_SR(GIE);
@@ -282,12 +280,14 @@ void main(void)
 
         pressed2 = launchpadButtonStates();
 
-        while(pressed2 != 0x00){
+        //while(pressed2 != 0x00){
 
-        pressed2 = launchpadButtonStates();
+        //pressed2 = launchpadButtonStates();
+
+
 
         if (diesel == 1 && pressed2 == 0x01){
-            timer_on = 1;
+
             runtimerA2();
 
             totalGallons = timer_cnt;
@@ -301,6 +301,7 @@ void main(void)
 
             // Update display
             Graphics_flushBuffer(&g_sContext);
+
         }
 
         else if (pressed2 == 0x04 && (!(diesel == 1)))
@@ -321,9 +322,15 @@ void main(void)
             Graphics_flushBuffer(&g_sContext);
         }
 
-        stoptimerA2(0);
+        else
+        {
+            stoptimerA2(0);
+        }
 
-        }//end while pressed loop
+        //}//end while pressed loop
+
+        //stoptimerA2(0);
+
 
 
 
@@ -435,15 +442,13 @@ char launchpadButtonStates(){
 void runtimerA2(void)
 {
 // This function configures and starts Timer A2
-// Timer is counting ~0.01 seconds
+// Timer is counting ~0.1 seconds
 //
 // Input: none, Output: none
-//
-// smj, ECE2049, 17 Sep 2013
-//
+
 // Use ACLK, 16 Bit, up mode, 1 divider
     TA2CTL = TASSEL_1 + MC_1 + ID_0;
-    TA2CCR0 = 327; // 327+1 = 328 ACLK tics = ~1/100 seconds
+    TA2CCR0 = 3276; // 327+1 = 328 ACLK tics = ~1/10 seconds
     TA2CCTL0 = CCIE; // TA2CCR0 interrupt enabled
 }
 
@@ -453,9 +458,7 @@ void stoptimerA2(int reset)
 // if input reset = 1
 //
 // Input: reset, Output: none
-//
-// smj, ECE2049, 17 Sep 2013
-//
+
     TA2CTL = MC_0; // stop timer
     TA2CCTL0 &= ~CCIE; // TA2CCR0 interrupt disabled
     if (reset)
