@@ -15,8 +15,8 @@ char buttonStates();
 void runtimerA2(void);
 void stoptimerA2(int reset);
 char launchpadButtonStates();
-void decimalASCIIPrice(int input);
-void decimalASCIIGallons(int gal);
+void decimalASCIIPrice(unsigned int input);
+void decimalASCIIGallons(unsigned int gal);
 
 // Declare globals here
 int state = 0;
@@ -482,7 +482,7 @@ __interrupt void TimerA2_ISR(void)
         timer_cnt--;
 }
 
-void decimalASCIIPrice(int input){
+void decimalASCIIPrice(unsigned int input){
 
     for (m = 9; m >= 0; m--){
        if (m == 5) {
@@ -501,7 +501,7 @@ void decimalASCIIPrice(int input){
 
 }
 
-void decimalASCIIGallons(int gal){
+void decimalASCIIGallons(unsigned int gal){
 
 
     for (j = 9; j >= 0; j--){
