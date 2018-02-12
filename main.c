@@ -76,6 +76,7 @@ void main(void)
 
         while(once == 1)
         {
+        Graphics_clearDisplay(&g_sContext); // Clear the display
         // Write some text to the display
         Graphics_drawStringCentered(&g_sContext, "Welcome", AUTO_STRING_LENGTH, 48, 15, TRANSPARENT_TEXT);
         Graphics_drawStringCentered(&g_sContext, "to", AUTO_STRING_LENGTH, 48, 25, TRANSPARENT_TEXT);
@@ -347,7 +348,7 @@ void main(void)
 
     case 8: //top off
 
-        while (timer_cnt <= cutoff_cnt + 50) //allow the user to top off the tank for 5 extra seconds
+        while (timer_cnt <= cutoff_cnt + 500) //allow the user to top off the tank for 5 extra seconds
         {
             pressed2 = launchpadButtonStates();
 
@@ -401,7 +402,7 @@ void main(void)
         if(pressed2 == 0x00)
         {
             stoptimerA2(1);
-            totalPrice = totalGallons * rate;
+            totalPrice = (totalGallons/10) * rate;
             decimalASCIIPrice(totalPrice);
             state = 10;
             once = 1;
@@ -480,7 +481,7 @@ void main(void)
         {
             runtimerA2();
 
-            if(timer_cnt > 150)
+            if(timer_cnt > 1500)
            {
                state = 12;
                once = 1;
@@ -527,7 +528,7 @@ void main(void)
             else if (isTrue1 == 0){ //correct pin entered
                 currKey = getKey();
                 once = 1;
-                state = 0;
+                state = 13;
                 swDelay(1);
                 Graphics_clearDisplay(&g_sContext); // Clear the display
             }
@@ -682,7 +683,7 @@ void main(void)
                 BuzzerOff();
                 setLeds(0);
                 once = 1;
-                state = 0;
+                state = 13;
                 swDelay(1);
                 Graphics_clearDisplay(&g_sContext); // Clear the display
             }
@@ -690,6 +691,26 @@ void main(void)
 
         break;
 
+    case 13: //thank you!!
+
+        while(once == 1){
+        Graphics_drawStringCentered(&g_sContext, "Thank you!", AUTO_STRING_LENGTH, 48, 35, TRANSPARENT_TEXT);
+        Graphics_drawStringCentered(&g_sContext, "Come again!", AUTO_STRING_LENGTH, 48, 45, TRANSPARENT_TEXT);
+
+        // Update display
+        Graphics_flushBuffer(&g_sContext);
+
+        swDelay(5);
+
+        once = 0;
+        }
+
+        if(once == 0)
+        {
+            state = 0;
+            once = 1;
+            break;
+        }
 
     }//end the switch state
     }//end the while loop
@@ -799,13 +820,13 @@ char launchpadButtonStates(){
 void runtimerA2(void)
 {
 // This function configures and starts Timer A2
-// Timer is counting ~0.1 seconds
+// Timer is counting ~0.01 seconds
 //
 // Input: none, Output: none
 
 // Use ACLK, 16 Bit, up mode, 1 divider
     TA2CTL = TASSEL_1 + MC_1 + ID_0;
-    TA2CCR0 = 3275; // 3275+1 = 3276 ACLK tics = ~1/10 seconds
+    TA2CCR0 = 327; // 327+1 = 328 ACLK tics = ~1/100 seconds
     TA2CCTL0 = CCIE; // TA2CCR0 interrupt enabled
 }
 
@@ -861,6 +882,7 @@ void decimalASCIIPrice(unsigned int input)
 
 void decimalASCIIGallons(unsigned int gal)
 {
+    gal = gal / 10;
     for (j = 5; j >= 0; j--)
     {
         if (j == 3)
