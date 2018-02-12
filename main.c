@@ -262,7 +262,7 @@ void main(void)
 
 
 
-    case 6: // Pump Ready and fueling
+    case 6: // Pump Ready
 
         //while(once == 1){
 
@@ -281,7 +281,7 @@ void main(void)
         break;
 
 
-    case 7:
+    case 7: //actual fueling
 
         pressed2 = launchpadButtonStates();
 
@@ -335,7 +335,7 @@ void main(void)
 
         break;
 
-    case 8:
+    case 8: //top off
 
         while (timer_cnt <= cutoff_cnt + 50) //allow the user to top off the tank for 5 extra seconds
         {
@@ -387,6 +387,40 @@ void main(void)
 
             } //end while pressed loop
         }
+
+        if(pressed2 == 0x00)
+        {
+            state = 9;
+            once = 1;
+            break;
+        }
+        else
+        {
+            pressed2 = launchpadButtonStates();
+        }
+
+    case 9: //display price
+
+        while(once == 1)
+        {
+            // *** Intro Screen ***
+            Graphics_clearDisplay(&g_sContext); // Clear the display
+            once = 0;
+        }
+
+        // Update display
+        Graphics_flushBuffer(&g_sContext);
+
+        totalPrice = current_cnt * rate;
+
+        decimalASCIIPrice(totalPrice);
+
+        Graphics_drawStringCentered(&g_sContext, "Your Price is", AUTO_STRING_LENGTH, 48, 45, OPAQUE_TEXT);
+        Graphics_drawStringCentered(&g_sContext, priceArray, 10, 48, 55, OPAQUE_TEXT);
+
+        // Update display
+        Graphics_flushBuffer(&g_sContext);
+
         break;
 
     }//end the switch state
@@ -485,6 +519,8 @@ char launchpadButtonStates(){
         out21 = 0x01; //0000 0001
     else if (!(inBits11 & BIT1))
         out11 = 0x04; //0000 0100
+    else
+        out21 = 0x00;
 
     out = (out21|out11);
 
