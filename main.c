@@ -22,14 +22,14 @@ void decimalASCIIGallons(unsigned int gal);
 int state = 0;
 unsigned char pressed = 0xFF;
 unsigned char pressed2 = 0xFF;
-unsigned char currKey=0;
+unsigned char currKey = 0;
 int once = 1;
 int diesel = 0;
 int super = 0;
 int premium = 0;
 int regular = 0;
 unsigned int rate = 0;
-long unsigned int timer_cnt=0;
+long unsigned int timer_cnt = 0;
 char tdir = 1;
 unsigned int totalGallons = 0;
 unsigned int totalPrice = 0;
@@ -264,7 +264,7 @@ void main(void)
 
     case 6: // Pump Ready and fueling
 
-        while(once == 1){
+        //while(once == 1){
 
         Graphics_drawStringCentered(&g_sContext, "Pump Ready.", AUTO_STRING_LENGTH, 48, 15, TRANSPARENT_TEXT);
         Graphics_drawStringCentered(&g_sContext, "Begin Fueling", AUTO_STRING_LENGTH, 48, 25, TRANSPARENT_TEXT);
@@ -274,9 +274,12 @@ void main(void)
 
         stoptimerA2(1);
 
-        once = 0;
+        //once = 0;
 
-        }//end while once
+        //}//end while once
+        state = 7;
+
+    case 7:
 
         pressed2 = launchpadButtonStates();
 
@@ -285,10 +288,11 @@ void main(void)
         //pressed2 = launchpadButtonStates();
 
 
-
         if (diesel == 1 && pressed2 == 0x01){
 
             runtimerA2();
+
+            totalGallons = timer_cnt;
 
             decimalASCIIGallons(totalGallons);
 
@@ -305,12 +309,11 @@ void main(void)
             timer_on = 1;
             runtimerA2();
 
-            /*totalGallons = timer_cnt;
-            totalPrice = (timer_cnt)*(rate);
-
-            decimalASCIIPrice(totalPrice);*/
+            totalGallons = timer_cnt;
+            //totalPrice = (timer_cnt)*(rate);
 
             decimalASCIIGallons(totalGallons);
+            //decimalASCIIPrice(totalPrice);
 
             Graphics_drawStringCentered(&g_sContext, galArray, 6, 48, 45, OPAQUE_TEXT);
             //Graphics_drawStringCentered(&g_sContext, priceArray, 10, 48, 55, OPAQUE_TEXT);
@@ -328,11 +331,8 @@ void main(void)
 
         //stoptimerA2(0);
 
-
     }//end the switch state
     }//end the while loop
-
-
 
 }
 
@@ -449,7 +449,7 @@ void runtimerA2(void)
 
 void stoptimerA2(int reset)
 {
-// This function stops Timer A2 andresets the global time variable
+// This function stops Timer A2 and resets the global time variable
 // if input reset = 1
 //
 // Input: reset, Output: none
@@ -464,14 +464,6 @@ void stoptimerA2(int reset)
 #pragma vector=TIMER2_A0_VECTOR
 __interrupt void TimerA2_ISR(void)
 {
-    pressed2 = launchpadButtonStates();
-
-    totalGallons = timer_cnt;
-    //totalPrice = (timer_cnt)*(rate);
-
-    //decimalASCIIGallons(totalGallons);
-    //decimalASCIIPrice(totalPrice);
-
     timer_cnt++;
 }
 
