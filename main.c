@@ -36,7 +36,17 @@ unsigned int totalPrice = 0;
 int timer_on = 0;
 unsigned char priceArray[10] = {' '};
 unsigned char galArray[6] = {' '};
-int i = 0, j = 0, m = 0;
+int i = 0, j = 0, m = 0, q = 0, z = 0, p = 0, a = 0, r = 0;
+unsigned char pin1[8] = {' '};
+unsigned char pin2[8] = {' '};
+unsigned char pin3[8] = {' '};
+unsigned char displayPin1[8] = {' '};
+unsigned char displayPin2[8] = {' '};
+unsigned char displayPin3[8] = {' '};
+unsigned char correctPin1[8] = {0,8,6,7,5,3,0,9};
+unsigned char correctPin2[8] = {3,1,4,1,5,9,2,6};
+int isTrue1 = 0;
+int isTrue2 = 0;
 
 
 // Main
@@ -298,8 +308,7 @@ void main(void)
 
                 decimalASCIIGallons(totalGallons);
 
-                Graphics_drawStringCentered(&g_sContext, galArray, 6, 48,
-                                            45, OPAQUE_TEXT);
+                Graphics_drawStringCentered(&g_sContext, galArray, 6, 48, 45, OPAQUE_TEXT);
                 //Graphics_drawStringCentered(&g_sContext, priceArray, 10, 48, 55, OPAQUE_TEXT);
 
                 // Update display
@@ -399,11 +408,10 @@ void main(void)
             pressed2 = launchpadButtonStates();
         }
 
-    case 9: //display price
+    /*case 9: //calculate price
 
         while(once == 1)
         {
-            // *** Intro Screen ***
             Graphics_clearDisplay(&g_sContext); // Clear the display
             once = 0;
         }
@@ -415,11 +423,255 @@ void main(void)
 
         decimalASCIIPrice(totalPrice);
 
-        Graphics_drawStringCentered(&g_sContext, "Your Price is", AUTO_STRING_LENGTH, 48, 45, OPAQUE_TEXT);
-        Graphics_drawStringCentered(&g_sContext, priceArray, 10, 48, 55, OPAQUE_TEXT);
+        swDelay(5);
 
-        // Update display
-        Graphics_flushBuffer(&g_sContext);
+        break;*/
+
+    case 10: // Display price and pay
+
+        currKey = getKey();
+
+        while (once == 1)
+        {
+            totalPrice = current_cnt * rate;
+
+            decimalASCIIPrice(totalPrice);
+
+            Graphics_drawStringCentered(&g_sContext, "Total Cost:", AUTO_STRING_LENGTH, 48, 15, TRANSPARENT_TEXT);
+            Graphics_drawStringCentered(&g_sContext, priceArray, 10, 48, 25, OPAQUE_TEXT);
+            Graphics_drawStringCentered(&g_sContext, "Enter PIN.", AUTO_STRING_LENGTH, 48, 35, TRANSPARENT_TEXT);
+            Graphics_drawStringCentered(&g_sContext, "'*' to Finish", AUTO_STRING_LENGTH, 48, 65, TRANSPARENT_TEXT);
+
+            // Update display
+            Graphics_flushBuffer(&g_sContext);
+
+            pin1[0] = ' ';
+            pin1[1] = ' ';
+            pin1[2] = ' ';
+            pin1[3] = ' ';
+            pin1[4] = ' ';
+            pin1[5] = ' ';
+            pin1[6] = ' ';
+            pin1[7] = ' ';
+
+            displayPin1[0] = ' ';
+            displayPin1[1] = ' ';
+            displayPin1[2] = ' ';
+            displayPin1[3] = ' ';
+            displayPin1[4] = ' ';
+            displayPin1[5] = ' ';
+            displayPin1[6] = ' ';
+            displayPin1[7] = ' ';
+
+            q = 0;
+
+            isTrue1 = 0;
+
+            once = 0;
+        }
+
+
+        while (q < 8)
+        {
+            currKey = getKey();
+
+            if ((currKey >= '0') && (currKey <= '9'))
+            {
+                pin1[q] = currKey - 0x30;
+                displayPin1[q] = '#';
+                q++;
+                swDelay(1);
+            } //end if statement
+
+            Graphics_drawStringCentered(&g_sContext, displayPin1, 8, 48, 45, OPAQUE_TEXT);
+
+            // Update display
+            Graphics_flushBuffer(&g_sContext);
+
+        } //end while loop
+
+        if (currKey == '*')
+        {
+
+            for (i = 0; i < 8; i++)
+            {
+                if (pin1[i] != correctPin1[i] && pin1[i] != correctPin2[i]) //incorrect pin is entered
+                {
+                    isTrue1 = 1;
+                }
+
+            }
+
+            if (isTrue1 == 1){ //incorrect pin entered
+                once = 1;
+                state = 8;
+                Graphics_clearDisplay(&g_sContext); // Clear the display
+            }
+
+            else if (isTrue1 == 0){ //correct pin entered
+                currKey = getKey();
+                once = 1;
+                state = 0;
+                Graphics_clearDisplay(&g_sContext); // Clear the display
+            }
+
+        }
+
+        break;
+
+
+    case 11: //Incorrect Pin
+
+        while (once == 1){
+            Graphics_drawStringCentered(&g_sContext, "Incorrect Pin", AUTO_STRING_LENGTH, 48, 35, TRANSPARENT_TEXT);
+
+            // Update display
+            Graphics_flushBuffer(&g_sContext);
+
+            p++;
+
+
+
+            once = 0;
+        }
+
+        swDelay(5);
+
+        if (p < 3){
+            isTrue1 = 0;
+            once = 1;
+            state = 7;
+            Graphics_clearDisplay(&g_sContext); // Clear the display
+        }
+
+        else if (p == 3){
+            once = 1;
+            state = 9;
+            Graphics_clearDisplay(&g_sContext); // Clear the display
+        }
+
+        break;
+
+    case 12: //Alarm
+
+        currKey = getKey();
+
+        while (once == 1){
+            Graphics_drawStringCentered(&g_sContext, "ALARM!!!", AUTO_STRING_LENGTH, 48, 15, TRANSPARENT_TEXT);
+            Graphics_drawStringCentered(&g_sContext, "Enter PIN", AUTO_STRING_LENGTH, 48, 25, TRANSPARENT_TEXT);
+            Graphics_drawStringCentered(&g_sContext, "to Stop.", AUTO_STRING_LENGTH, 48, 35, TRANSPARENT_TEXT);
+            Graphics_drawStringCentered(&g_sContext, "'*' to Finish", AUTO_STRING_LENGTH, 48, 75, TRANSPARENT_TEXT);
+
+            // Update display
+            Graphics_flushBuffer(&g_sContext);
+
+            pin3[0] = ' ';
+            pin3[1] = ' ';
+            pin3[2] = ' ';
+            pin3[3] = ' ';
+            pin3[4] = ' ';
+            pin3[5] = ' ';
+            pin3[6] = ' ';
+            pin3[7] = ' ';
+
+            displayPin3[0] = ' ';
+            displayPin3[1] = ' ';
+            displayPin3[2] = ' ';
+            displayPin3[3] = ' ';
+            displayPin3[4] = ' ';
+            displayPin3[5] = ' ';
+            displayPin3[6] = ' ';
+            displayPin3[7] = ' ';
+
+            a = 0;
+
+            BuzzerOn();
+
+            setLeds(0x31);
+            swDelay(1);
+            setLeds(0);
+            swDelay(1);
+            setLeds(0x32);
+            swDelay(1);
+            setLeds(0);
+            swDelay(1);
+            setLeds(0x34);
+            swDelay(1);
+            setLeds(0);
+            swDelay(1);
+            setLeds(0x38);
+            swDelay(1);
+            setLeds(0);
+            swDelay(1);
+            setLeds((10 + 0x30) + (5 + 0x30));
+            swDelay(1);
+
+            isTrue2 = 0;
+
+            once = 0;
+
+        }
+
+
+
+        while (a < 8)
+        {
+            currKey = getKey();
+
+            if ((currKey >= '0') && (currKey <= '9'))
+            {
+                pin3[a] = currKey - 0x30;
+                displayPin3[a] = '#';
+                a++;
+                swDelay(1);
+            } //end if statement
+
+            Graphics_drawStringCentered(&g_sContext, displayPin3, 8, 48, 55, OPAQUE_TEXT);
+
+            // Update display
+            Graphics_flushBuffer(&g_sContext);
+
+        } //end while loop
+
+        currKey = getKey();
+
+        if (currKey == '*')
+        {
+
+            for (i = 0; i < 8; i++)
+            {
+                if (pin3[i] != correctPin1[i] && pin3[i] != correctPin2[i]) //incorrect pin is entered
+                {
+                    isTrue2 = 1;
+                }
+            }
+            }
+
+            if (isTrue2 == 1){//incorrect pin entered
+                Graphics_clearDisplay(&g_sContext); // Clear the display
+
+                Graphics_drawStringCentered(&g_sContext, "WRONG PIN!", AUTO_STRING_LENGTH, 48, 35, TRANSPARENT_TEXT);
+                Graphics_drawStringCentered(&g_sContext, "TRY AGAIN!", AUTO_STRING_LENGTH, 48, 45, TRANSPARENT_TEXT);
+
+                // Update display
+                Graphics_flushBuffer(&g_sContext);
+
+                swDelay(2);
+
+                a = 0;
+                once = 1;
+                state = 9;
+                Graphics_clearDisplay(&g_sContext); // Clear the display
+            }
+
+            else if (isTrue2 == 0){ //correct pin is entered
+                BuzzerOff();
+                setLeds(0);
+                once = 1;
+                state = 0;
+                Graphics_clearDisplay(&g_sContext); // Clear the display
+            }
+
 
         break;
 
@@ -602,3 +854,5 @@ void decimalASCIIGallons(unsigned int gal)
         }
     }
 }
+
+
