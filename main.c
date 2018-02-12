@@ -856,6 +856,8 @@ __interrupt void TimerA2_ISR(void)
         current_cnt = current_cnt;
     }
     timer_cnt++;
+
+    pressed2 = launchpadButtonStates();
 }
 
 void decimalASCIIPrice(unsigned int input)
