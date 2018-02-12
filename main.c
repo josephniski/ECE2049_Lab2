@@ -399,7 +399,7 @@ void main(void)
 
         if(pressed2 == 0x00)
         {
-            state = 9;
+            state = 10;
             once = 1;
             break;
         }
