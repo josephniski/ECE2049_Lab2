@@ -504,7 +504,7 @@ void main(void)
 
             if (isTrue1 == 1){ //incorrect pin entered
                 once = 1;
-                state = 8;
+                state = 11;
                 Graphics_clearDisplay(&g_sContext); // Clear the display
             }
 
