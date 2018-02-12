@@ -29,14 +29,14 @@ int super = 0;
 int premium = 0;
 int regular = 0;
 unsigned int rate = 0;
-long unsigned int timer_cnt = 0;
+long unsigned int timer_cnt = 0, current_cnt = 0, cutoff_cnt = 0;
 char tdir = 1;
 unsigned int totalGallons = 0;
 unsigned int totalPrice = 0;
 int timer_on = 0;
 unsigned char priceArray[10] = {' '};
 unsigned char galArray[6] = {' '};
-int i = 0, j = 0, m=0;
+int i = 0, j = 0, m = 0;
 
 
 // Main
@@ -278,27 +278,90 @@ void main(void)
 
         //}//end while once
         state = 7;
+        break;
+
 
     case 7:
 
+        pressed2 = launchpadButtonStates();
+
+        while (pressed2 != 0x00)
+        {
             pressed2 = launchpadButtonStates();
+
+            if (diesel == 1 && pressed2 == 0x01)
+            {
+
+                runtimerA2();
+
+                totalGallons = timer_cnt;
+
+                decimalASCIIGallons(totalGallons);
+
+                Graphics_drawStringCentered(&g_sContext, galArray, 6, 48,
+                                            45, OPAQUE_TEXT);
+                //Graphics_drawStringCentered(&g_sContext, priceArray, 10, 48, 55, OPAQUE_TEXT);
+
+                // Update display
+                Graphics_flushBuffer(&g_sContext);
+
+            }
+
+            else if (pressed2 == 0x04 && diesel == 0)
+            {
+                timer_on = 1;
+                runtimerA2();
+
+                totalGallons = timer_cnt;
+
+                decimalASCIIGallons(totalGallons);
+
+                Graphics_drawStringCentered(&g_sContext, galArray, 6, 48, 45, OPAQUE_TEXT);
+                //Graphics_drawStringCentered(&g_sContext, priceArray, 10, 48, 55, OPAQUE_TEXT);
+
+                // Update display
+                Graphics_flushBuffer(&g_sContext);
+            }
+            else
+            {
+                state = 8;
+                once = 1;
+                current_cnt = timer_cnt;
+                cutoff_cnt = timer_cnt;
+                break;
+            }
+
+        } //end while pressed loop
+
+        break;
+
+    case 8:
+
+        while (timer_cnt <= cutoff_cnt + 50) //allow the user to top off the tank for 5 extra seconds
+        {
+            pressed2 = launchpadButtonStates();
+
+            while(once == 1)
+            {
+            long unsigned int time_diff = timer_cnt - current_cnt;
+
+            current_cnt = current_cnt - time_diff;
+            once = 0;
+            }
 
             while (pressed2 != 0x00)
             {
-
                 pressed2 = launchpadButtonStates();
 
                 if (diesel == 1 && pressed2 == 0x01)
                 {
-
                     runtimerA2();
 
-                    totalGallons = timer_cnt;
+                    totalGallons = current_cnt;
 
                     decimalASCIIGallons(totalGallons);
 
-                    Graphics_drawStringCentered(&g_sContext, galArray, 6, 48,
-                                                45, OPAQUE_TEXT);
+                    Graphics_drawStringCentered(&g_sContext, galArray, 6, 48, 45, OPAQUE_TEXT);
                     //Graphics_drawStringCentered(&g_sContext, priceArray, 10, 48, 55, OPAQUE_TEXT);
 
                     // Update display
@@ -311,7 +374,7 @@ void main(void)
                     timer_on = 1;
                     runtimerA2();
 
-                    totalGallons = timer_cnt;
+                    totalGallons = current_cnt;
 
                     decimalASCIIGallons(totalGallons);
 
@@ -320,62 +383,11 @@ void main(void)
 
                     // Update display
                     Graphics_flushBuffer(&g_sContext);
-                }
-
-                else
-                {
-                    stoptimerA2(0);
                 }
 
             } //end while pressed loop
-
-            int current_cnt = timer_cnt;
-
-            while(timer_cnt <= timer_cnt + 50)//allow the user to top off the tank for 5 extra seconds
-            {
-                pressed2 = launchpadButtonStates();
-
-                if (diesel == 1 && pressed2 == 0x01)
-                {
-
-                    runtimerA2();
-
-                    totalGallons = timer_cnt;
-
-                    decimalASCIIGallons(totalGallons);
-
-                    Graphics_drawStringCentered(&g_sContext, galArray, 6, 48, 45, OPAQUE_TEXT);
-                    //Graphics_drawStringCentered(&g_sContext, priceArray, 10, 48, 55, OPAQUE_TEXT);
-
-                    // Update display
-                    Graphics_flushBuffer(&g_sContext);
-
-                }
-
-                else if (pressed2 == 0x04 && diesel == 0)
-                {
-                    timer_on = 1;
-                    runtimerA2();
-
-                    totalGallons = timer_cnt;
-
-                    decimalASCIIGallons(totalGallons);
-
-                    Graphics_drawStringCentered(&g_sContext, galArray, 6, 48, 45, OPAQUE_TEXT);
-                    //Graphics_drawStringCentered(&g_sContext, priceArray, 10, 48, 55, OPAQUE_TEXT);
-
-                    // Update display
-                    Graphics_flushBuffer(&g_sContext);
-                }
-
-                else
-                {
-                    stoptimerA2(0);
-                }
-            }
-
-
-        //stoptimerA2(0);
+        }
+        break;
 
     }//end the switch state
     }//end the while loop
@@ -510,6 +522,10 @@ void stoptimerA2(int reset)
 #pragma vector=TIMER2_A0_VECTOR
 __interrupt void TimerA2_ISR(void)
 {
+    if(state == 8)
+    {
+       current_cnt++;
+    }
     timer_cnt++;
 }
 
