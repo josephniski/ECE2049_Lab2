@@ -171,6 +171,7 @@ void main(void)
         }
         else if (currKey == '#')
         {
+            once = 1;
             state = 1;
             Graphics_clearDisplay(&g_sContext); // Clear the display
         }
@@ -364,7 +365,7 @@ void main(void)
 
                 if (diesel == 1 && pressed2 == 0x01)
                 {
-                    runtimerA2();
+                    //runtimerA2();
 
                     totalGallons = current_cnt;
 
@@ -381,7 +382,7 @@ void main(void)
                 else if (pressed2 == 0x04 && diesel == 0)
                 {
                     timer_on = 1;
-                    runtimerA2();
+                    //runtimerA2();
 
                     totalGallons = current_cnt;
 
@@ -399,8 +400,12 @@ void main(void)
 
         if(pressed2 == 0x00)
         {
+            stoptimerA2(1);
+            totalPrice = totalGallons * rate;
+            decimalASCIIPrice(totalPrice);
             state = 10;
             once = 1;
+            Graphics_clearDisplay(&g_sContext); // Clear the display
             break;
         }
         else
@@ -431,11 +436,10 @@ void main(void)
 
         currKey = getKey();
 
+        runtimerA2();
+
         while (once == 1)
         {
-            totalPrice = current_cnt * rate;
-
-            decimalASCIIPrice(totalPrice);
 
             Graphics_drawStringCentered(&g_sContext, "Total Cost:", AUTO_STRING_LENGTH, 48, 15, TRANSPARENT_TEXT);
             Graphics_drawStringCentered(&g_sContext, priceArray, 10, 48, 25, OPAQUE_TEXT);
@@ -470,9 +474,20 @@ void main(void)
             once = 0;
         }
 
+        stoptimerA2(1);
 
         while (q < 8)
         {
+            runtimerA2();
+
+            if(timer_cnt > 150)
+           {
+               state = 12;
+               once = 1;
+               Graphics_clearDisplay(&g_sContext); // Clear the display
+               break;
+           }
+
             currKey = getKey();
 
             if ((currKey >= '0') && (currKey <= '9'))
@@ -480,7 +495,8 @@ void main(void)
                 pin1[q] = currKey - 0x30;
                 displayPin1[q] = '#';
                 q++;
-                swDelay(1);
+                stoptimerA2(1);
+                swDelay(0.45);
             } //end if statement
 
             Graphics_drawStringCentered(&g_sContext, displayPin1, 8, 48, 45, OPAQUE_TEXT);
@@ -512,6 +528,7 @@ void main(void)
                 currKey = getKey();
                 once = 1;
                 state = 0;
+                swDelay(1);
                 Graphics_clearDisplay(&g_sContext); // Clear the display
             }
 
@@ -529,9 +546,6 @@ void main(void)
             Graphics_flushBuffer(&g_sContext);
 
             p++;
-
-
-
             once = 0;
         }
 
@@ -540,13 +554,13 @@ void main(void)
         if (p < 3){
             isTrue1 = 0;
             once = 1;
-            state = 7;
+            state = 10;
             Graphics_clearDisplay(&g_sContext); // Clear the display
         }
 
         else if (p == 3){
             once = 1;
-            state = 9;
+            state = 12;
             Graphics_clearDisplay(&g_sContext); // Clear the display
         }
 
@@ -669,11 +683,13 @@ void main(void)
                 setLeds(0);
                 once = 1;
                 state = 0;
+                swDelay(1);
                 Graphics_clearDisplay(&g_sContext); // Clear the display
             }
 
 
         break;
+
 
     }//end the switch state
     }//end the while loop
@@ -813,6 +829,10 @@ __interrupt void TimerA2_ISR(void)
     if(state == 8)
     {
        current_cnt++;
+    }
+    else
+    {
+        current_cnt = current_cnt;
     }
     timer_cnt++;
 }
