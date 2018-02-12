@@ -35,7 +35,7 @@ unsigned int totalGallons = 0;
 unsigned int totalPrice = 0;
 int timer_on = 0;
 unsigned char priceArray[10] = {' '};
-unsigned char galArray[10] = {' '};
+unsigned char galArray[6] = {' '};
 int i = 0, j = 0, m=0;
 
 
@@ -292,7 +292,7 @@ void main(void)
 
             decimalASCIIGallons(totalGallons);
 
-            Graphics_drawStringCentered(&g_sContext, galArray, 10, 48, 45, OPAQUE_TEXT);
+            Graphics_drawStringCentered(&g_sContext, galArray, 6, 48, 45, OPAQUE_TEXT);
             //Graphics_drawStringCentered(&g_sContext, priceArray, 10, 48, 55, OPAQUE_TEXT);
 
             // Update display
@@ -312,7 +312,7 @@ void main(void)
 
             decimalASCIIGallons(totalGallons);
 
-            Graphics_drawStringCentered(&g_sContext, galArray, 10, 48, 45, OPAQUE_TEXT);
+            Graphics_drawStringCentered(&g_sContext, galArray, 6, 48, 45, OPAQUE_TEXT);
             //Graphics_drawStringCentered(&g_sContext, priceArray, 10, 48, 55, OPAQUE_TEXT);
 
             // Update display
@@ -497,8 +497,8 @@ void decimalASCIIPrice(unsigned int input){
 void decimalASCIIGallons(unsigned int gal){
 
 
-    for (j = 9; j >= 0; j--){
-        if(j == 7){
+    for (j = 5; j >= 0; j--){
+        if(j == 3){
             galArray[j] = '.';
         }
         else {
