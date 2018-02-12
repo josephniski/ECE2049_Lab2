@@ -281,53 +281,99 @@ void main(void)
 
     case 7:
 
-        pressed2 = launchpadButtonStates();
+            pressed2 = launchpadButtonStates();
 
-        //while(pressed2 != 0x00){
+            while (pressed2 != 0x00)
+            {
 
-        //pressed2 = launchpadButtonStates();
+                pressed2 = launchpadButtonStates();
 
+                if (diesel == 1 && pressed2 == 0x01)
+                {
 
-        if (diesel == 1 && pressed2 == 0x01){
+                    runtimerA2();
 
-            runtimerA2();
+                    totalGallons = timer_cnt;
 
-            totalGallons = timer_cnt;
+                    decimalASCIIGallons(totalGallons);
 
-            decimalASCIIGallons(totalGallons);
+                    Graphics_drawStringCentered(&g_sContext, galArray, 6, 48,
+                                                45, OPAQUE_TEXT);
+                    //Graphics_drawStringCentered(&g_sContext, priceArray, 10, 48, 55, OPAQUE_TEXT);
 
-            Graphics_drawStringCentered(&g_sContext, galArray, 6, 48, 45, OPAQUE_TEXT);
-            //Graphics_drawStringCentered(&g_sContext, priceArray, 10, 48, 55, OPAQUE_TEXT);
+                    // Update display
+                    Graphics_flushBuffer(&g_sContext);
 
-            // Update display
-            Graphics_flushBuffer(&g_sContext);
+                }
 
-        }
+                else if (pressed2 == 0x04 && diesel == 0)
+                {
+                    timer_on = 1;
+                    runtimerA2();
 
-        else if (pressed2 == 0x04 && diesel == 0)
-        {
-            timer_on = 1;
-            runtimerA2();
+                    totalGallons = timer_cnt;
 
-            totalGallons = timer_cnt;
-            //totalPrice = (timer_cnt)*(rate);
+                    decimalASCIIGallons(totalGallons);
 
-            decimalASCIIGallons(totalGallons);
-            //decimalASCIIPrice(totalPrice);
+                    Graphics_drawStringCentered(&g_sContext, galArray, 6, 48, 45, OPAQUE_TEXT);
+                    //Graphics_drawStringCentered(&g_sContext, priceArray, 10, 48, 55, OPAQUE_TEXT);
 
-            Graphics_drawStringCentered(&g_sContext, galArray, 6, 48, 45, OPAQUE_TEXT);
-            //Graphics_drawStringCentered(&g_sContext, priceArray, 10, 48, 55, OPAQUE_TEXT);
+                    // Update display
+                    Graphics_flushBuffer(&g_sContext);
+                }
 
-            // Update display
-            Graphics_flushBuffer(&g_sContext);
-        }
+                else
+                {
+                    stoptimerA2(0);
+                }
 
-        else
-        {
-            stoptimerA2(0);
-        }
+            } //end while pressed loop
 
-        //}//end while pressed loop
+            int current_cnt = timer_cnt;
+
+            while(timer_cnt <= timer_cnt + 50)//allow the user to top off the tank for 5 extra seconds
+            {
+                pressed2 = launchpadButtonStates();
+
+                if (diesel == 1 && pressed2 == 0x01)
+                {
+
+                    runtimerA2();
+
+                    totalGallons = timer_cnt;
+
+                    decimalASCIIGallons(totalGallons);
+
+                    Graphics_drawStringCentered(&g_sContext, galArray, 6, 48, 45, OPAQUE_TEXT);
+                    //Graphics_drawStringCentered(&g_sContext, priceArray, 10, 48, 55, OPAQUE_TEXT);
+
+                    // Update display
+                    Graphics_flushBuffer(&g_sContext);
+
+                }
+
+                else if (pressed2 == 0x04 && diesel == 0)
+                {
+                    timer_on = 1;
+                    runtimerA2();
+
+                    totalGallons = timer_cnt;
+
+                    decimalASCIIGallons(totalGallons);
+
+                    Graphics_drawStringCentered(&g_sContext, galArray, 6, 48, 45, OPAQUE_TEXT);
+                    //Graphics_drawStringCentered(&g_sContext, priceArray, 10, 48, 55, OPAQUE_TEXT);
+
+                    // Update display
+                    Graphics_flushBuffer(&g_sContext);
+                }
+
+                else
+                {
+                    stoptimerA2(0);
+                }
+            }
+
 
         //stoptimerA2(0);
 
@@ -467,36 +513,40 @@ __interrupt void TimerA2_ISR(void)
     timer_cnt++;
 }
 
-void decimalASCIIPrice(unsigned int input){
+void decimalASCIIPrice(unsigned int input)
+{
 
-    for (m = 9; m >= 0; m--){
-       if (m == 5) {
-           priceArray[m] = '.';
-       }
-       else if (m == 0){
-           priceArray[m] = '$';
-       }
-       else {
-           priceArray[m] = ((input % 10) + 0x30);
-           input = input / 10;
-       }
+    for (m = 9; m >= 0; m--)
+    {
+        if (m == 5)
+        {
+            priceArray[m] = '.';
+        }
+        else if (m == 0)
+        {
+            priceArray[m] = '$';
+        }
+        else
+        {
+            priceArray[m] = ((input % 10) + 0x30);
+            input = input / 10;
+        }
     }
-
-
 
 }
 
-void decimalASCIIGallons(unsigned int gal){
-
-
-    for (j = 5; j >= 0; j--){
-        if(j == 3){
+void decimalASCIIGallons(unsigned int gal)
+{
+    for (j = 5; j >= 0; j--)
+    {
+        if (j == 3)
+        {
             galArray[j] = '.';
         }
-        else {
+        else
+        {
             galArray[j] = ((gal % 10) + 0x30);
             gal = gal / 10;
         }
     }
-
 }
