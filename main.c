@@ -290,12 +290,6 @@ void main(void)
 
             runtimerA2();
 
-            totalGallons = timer_cnt;
-            totalPrice = (timer_cnt)*(rate);
-
-            decimalASCIIGallons(totalGallons);
-            decimalASCIIPrice(totalPrice);
-
             Graphics_drawStringCentered(&g_sContext, galArray, 10, 48, 45, OPAQUE_TEXT);
             Graphics_drawStringCentered(&g_sContext, priceArray, 10, 48, 55, OPAQUE_TEXT);
 
@@ -309,8 +303,8 @@ void main(void)
             timer_on = 1;
             runtimerA2();
 
-            totalGallons = timer_cnt;
-            totalPrice = (timer_cnt)*(rate);
+            /*totalGallons = timer_cnt;
+            totalPrice = (timer_cnt)*(rate);*/
 
             decimalASCIIGallons(totalGallons);
             decimalASCIIPrice(totalPrice);
@@ -446,7 +440,7 @@ void runtimerA2(void)
 
 // Use ACLK, 16 Bit, up mode, 1 divider
     TA2CTL = TASSEL_1 + MC_1 + ID_0;
-    TA2CCR0 = 3276; // 3276+1 = 3277 ACLK tics = ~1/10 seconds
+    TA2CCR0 = 3275; // 3275+1 = 3276 ACLK tics = ~1/10 seconds
     TA2CCTL0 = CCIE; // TA2CCR0 interrupt enabled
 }
 
@@ -467,19 +461,13 @@ void stoptimerA2(int reset)
 #pragma vector=TIMER2_A0_VECTOR
 __interrupt void TimerA2_ISR(void)
 {
-    if (tdir)
-    {
-        timer_cnt++;  //05
-        if (timer_cnt == 60000)
-            timer_cnt = 0;
-        if (timer_cnt % 100 == 0) // blink LEDs once a second
-        {
-            P1OUT = P1OUT ^ BIT0;
-            P4OUT ^= BIT7;
-        }
-    }
-    else
-        timer_cnt--;
+    totalGallons = timer_cnt;
+    totalPrice = (timer_cnt)*(rate);
+
+    decimalASCIIGallons(totalGallons);
+    decimalASCIIPrice(totalPrice);
+
+    timer_cnt++;
 }
 
 void decimalASCIIPrice(unsigned int input){
