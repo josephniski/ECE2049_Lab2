@@ -290,8 +290,10 @@ void main(void)
 
             runtimerA2();
 
+            decimalASCIIGallons(totalGallons);
+
             Graphics_drawStringCentered(&g_sContext, galArray, 10, 48, 45, OPAQUE_TEXT);
-            Graphics_drawStringCentered(&g_sContext, priceArray, 10, 48, 55, OPAQUE_TEXT);
+            //Graphics_drawStringCentered(&g_sContext, priceArray, 10, 48, 55, OPAQUE_TEXT);
 
             // Update display
             Graphics_flushBuffer(&g_sContext);
@@ -304,13 +306,14 @@ void main(void)
             runtimerA2();
 
             /*totalGallons = timer_cnt;
-            totalPrice = (timer_cnt)*(rate);*/
+            totalPrice = (timer_cnt)*(rate);
+
+            decimalASCIIPrice(totalPrice);*/
 
             decimalASCIIGallons(totalGallons);
-            decimalASCIIPrice(totalPrice);
 
             Graphics_drawStringCentered(&g_sContext, galArray, 10, 48, 45, OPAQUE_TEXT);
-            Graphics_drawStringCentered(&g_sContext, priceArray, 10, 48, 55, OPAQUE_TEXT);
+            //Graphics_drawStringCentered(&g_sContext, priceArray, 10, 48, 55, OPAQUE_TEXT);
 
             // Update display
             Graphics_flushBuffer(&g_sContext);
@@ -461,11 +464,13 @@ void stoptimerA2(int reset)
 #pragma vector=TIMER2_A0_VECTOR
 __interrupt void TimerA2_ISR(void)
 {
-    totalGallons = timer_cnt;
-    totalPrice = (timer_cnt)*(rate);
+    pressed2 = launchpadButtonStates();
 
-    decimalASCIIGallons(totalGallons);
-    decimalASCIIPrice(totalPrice);
+    totalGallons = timer_cnt;
+    //totalPrice = (timer_cnt)*(rate);
+
+    //decimalASCIIGallons(totalGallons);
+    //decimalASCIIPrice(totalPrice);
 
     timer_cnt++;
 }
