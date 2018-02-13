@@ -352,16 +352,15 @@ void main(void)
         {
             pressed2 = launchpadButtonStates();
 
-            while(once == 1)
-            {
-            long unsigned int time_diff = timer_cnt - current_cnt;
-
-            current_cnt = current_cnt - time_diff;
-            once = 0;
-            }
-
             while (pressed2 != 0x00)
             {
+                while (once == 1)
+                {
+                    long unsigned int time_diff = current_cnt - totalGallons;
+                    current_cnt = current_cnt - time_diff;
+
+                    once = 0;
+                }
                 pressed2 = launchpadButtonStates();
 
                 if (diesel == 1 && pressed2 == 0x01)
@@ -404,7 +403,7 @@ void main(void)
             stoptimerA2(1);
             totalPrice = (totalGallons/10) * rate;
             decimalASCIIPrice(totalPrice);
-            state = 10;
+            state = 9;
             once = 1;
             Graphics_clearDisplay(&g_sContext); // Clear the display
             break;
@@ -414,26 +413,7 @@ void main(void)
             pressed2 = launchpadButtonStates();
         }
 
-    /*case 9: //calculate price
-
-        while(once == 1)
-        {
-            Graphics_clearDisplay(&g_sContext); // Clear the display
-            once = 0;
-        }
-
-        // Update display
-        Graphics_flushBuffer(&g_sContext);
-
-        totalPrice = current_cnt * rate;
-
-        decimalASCIIPrice(totalPrice);
-
-        swDelay(5);
-
-        break;*/
-
-    case 10: // Display price and pay
+    case 9: // Display price and pay
 
         currKey = getKey();
 
@@ -483,7 +463,7 @@ void main(void)
 
             if(timer_cnt > 1500)
            {
-               state = 12;
+               state = 11;
                once = 1;
                Graphics_clearDisplay(&g_sContext); // Clear the display
                break;
@@ -521,14 +501,14 @@ void main(void)
 
             if (isTrue1 == 1){ //incorrect pin entered
                 once = 1;
-                state = 11;
+                state = 10;
                 Graphics_clearDisplay(&g_sContext); // Clear the display
             }
 
             else if (isTrue1 == 0){ //correct pin entered
                 currKey = getKey();
                 once = 1;
-                state = 13;
+                state = 12;
                 swDelay(1);
                 Graphics_clearDisplay(&g_sContext); // Clear the display
             }
@@ -538,7 +518,7 @@ void main(void)
         break;
 
 
-    case 11: //Incorrect Pin
+    case 10: //Incorrect Pin
 
         while (once == 1){
             Graphics_drawStringCentered(&g_sContext, "Incorrect Pin", AUTO_STRING_LENGTH, 48, 35, TRANSPARENT_TEXT);
@@ -555,19 +535,19 @@ void main(void)
         if (p < 3){
             isTrue1 = 0;
             once = 1;
-            state = 10;
+            state = 9;
             Graphics_clearDisplay(&g_sContext); // Clear the display
         }
 
         else if (p == 3){
             once = 1;
-            state = 12;
+            state = 11;
             Graphics_clearDisplay(&g_sContext); // Clear the display
         }
 
         break;
 
-    case 12: //Alarm
+    case 11: //Alarm
 
         currKey = getKey();
 
@@ -675,7 +655,7 @@ void main(void)
 
                 a = 0;
                 once = 1;
-                state = 9;
+                state = 8;
                 Graphics_clearDisplay(&g_sContext); // Clear the display
             }
 
@@ -683,7 +663,7 @@ void main(void)
                 BuzzerOff();
                 setLeds(0);
                 once = 1;
-                state = 13;
+                state = 12;
                 swDelay(1);
                 Graphics_clearDisplay(&g_sContext); // Clear the display
             }
@@ -691,7 +671,7 @@ void main(void)
 
         break;
 
-    case 13: //thank you!!
+    case 12: //thank you!!
 
         while(once == 1){
         Graphics_drawStringCentered(&g_sContext, "Thank you!", AUTO_STRING_LENGTH, 48, 35, TRANSPARENT_TEXT);
