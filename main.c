@@ -742,6 +742,12 @@ void swDelay(char numLoops)
 void configBoardButtons(){
     //4 Board Buttons: P7.0, P3.6, P2.2, P7.4
 
+    P2REN |= (BIT1);
+    P1REN |= (BIT1);
+
+    P2OUT |= (BIT1);
+    P1OUT |= (BIT1);
+
     P7SEL &= (BIT7|BIT6|BIT5|BIT3|BIT2|BIT1); //xxx0 xxx0
     P3SEL &= (BIT7|BIT5|BIT4|BIT3|BIT2|BIT1|BIT0); //x0xx xxxx
     P2SEL &= (BIT7|BIT6|BIT5|BIT4|BIT3|BIT1|BIT0); //xxxx x0xx
@@ -857,7 +863,7 @@ __interrupt void TimerA2_ISR(void)
     }
     timer_cnt++;
 
-    pressed2 = launchpadButtonStates();
+    //pressed2 = launchpadButtonStates();
 }
 
 void decimalASCIIPrice(unsigned int input)
